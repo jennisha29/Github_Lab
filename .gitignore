@@ -5,6 +5,7 @@ __pycache__/
 env/
 venv/
 env_lab01/
+env_lab04/
 
 # artifacts
 .env

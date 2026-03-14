@@ -1,0 +1,25 @@
+# python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+*env*/
+venv/
+.venv/
+
+.vscode/
+.idea/
+.DS_Store
+
+# docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# tests
+tests/
+pytest.ini
+
+# docs & assets
+README.md
+assets/
