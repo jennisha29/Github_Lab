@@ -2,7 +2,7 @@
 
 A machine learning API that trains a **Ridge Regression** model on the sklearn
 Diabetes dataset to predict disease progression scores, through **FastAPI**
-behind an **nginx** reverse proxy with a custom **DIABETIX** frontend dashboard.
+and with a custom **DIABETIX** frontend dashboard.
 
 ---
 

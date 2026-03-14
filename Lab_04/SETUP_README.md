@@ -1,4 +1,4 @@
-# Lab_04
+# Lab_04 — FastAPI + Docker + Frontend
 
 ---
 
