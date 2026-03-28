@@ -8,8 +8,6 @@ In this lab, I used **Weights & Biases (W&B)** to track my machine learning expe
 Instead of just printing results in the notebook, I logged everything — metrics, charts, models —
 to a W&B dashboard where I can visualize training, compare runs, and version my models.
 
-I built two experiments:
-
 - **Lab1** — a traditional ML model (XGBoost) on tabular data
 - **Lab2** — a deep learning model (CNN with Keras) on image data
 
