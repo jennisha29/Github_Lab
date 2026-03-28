@@ -2,19 +2,34 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+
+# virtual environments
 env/
 venv/
 env_lab01/
+env_lab02/
 env_lab04/
 
-# artifacts
+# local env
 .env
+
+# airflow runtime files
 logs/
 config/
 plugins/
 airflow.db
+
+# Lab 03 outputs
 Lab_03/my_image.tar
 Lab_03/data/
 
+# model artifacts
 *.keras
 *.pkl
+*.h5
+
+# Lab 05 runtime files
+Lab_05/wandb/
+Lab_05/artifacts/
+Lab_05/checkpoints/
+Lab_05/letter-recognition.data
