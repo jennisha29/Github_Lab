@@ -1,23 +1,137 @@
 # Lab_05 — Experiment Tracking with Weights & Biases
 
-Two machine learning experiments tracked end-to-end with **Weights & Biases (W&B)**:
-
-- **Lab1** — XGBoost classifier on UCI Letter Recognition (26 classes, A–Z)
-- **Lab2** — Deep CNN on CIFAR-100 coarse labels (20 superclasses)
-
-Both are modified from the original course repo with different datasets, models, hyperparameters, and dashboard visualizations.
-
 ---
 
 ## Overview
 
-**Lab1** downloads the Letter Recognition dataset (20,000 samples, 16 features),
-splits it into train / val / test, trains an XGBoost model with early stopping,
-and logs metrics, confusion matrix, feature importance, and the trained model to W&B.
+In this lab, I used **Weights & Biases (W&B)** to track my machine learning experiments.
+Instead of just printing results in the notebook, I logged everything — metrics, charts, models —
+to a W&B dashboard where I can visualize training, compare runs, and version my models.
 
-**Lab2** loads CIFAR-100 coarse labels (32×32 RGB images, 20 superclasses),
-trains a 3-block CNN with BatchNorm, data augmentation, and early stopping,
-and logs loss curves, sample predictions, confusion matrix, per-class accuracy, and the trained model to W&B.
+I built two experiments:
+
+- **Lab1** — a traditional ML model (XGBoost) on tabular data
+- **Lab2** — a deep learning model (CNN with Keras) on image data
+
+Both notebooks log hyperparameters, training progress, evaluation metrics, and visualizations
+to the same W&B project so I can compare them side by side.
+
+---
+
+## Lab 1 — XGBoost on Letter Recognition
+
+### What I did
+
+I downloaded the UCI Letter Recognition dataset (20,000 samples, 16 features)
+and trained an XGBoost classifier to recognize uppercase letters A–Z (26 classes).
+Everything is logged to W&B.
+
+### Key features
+
+- Stratified train / val / test split (70/15/15)
+- XGBoost with `multi:softprob` objective and L1/L2 regularization
+- Early stopping on validation loss (patience 20, up to 300 rounds)
+- I log accuracy, precision, recall, F1, error rate to W&B
+- I log a confusion matrix and feature importance bar chart
+- I print a per-class classification report
+- I save the trained model as a W&B artifact
+
+### Results
+
+| Metric         | Value     |
+| -------------- | --------- |
+| Accuracy       | 96.1%     |
+| Precision      | 96.2%     |
+| Recall         | 96.1%     |
+| F1             | 96.1%     |
+| Error Rate     | 3.9%      |
+| Best Iteration | 299 / 300 |
+
+### Screenshots
+
+#### Run Summary
+
+This shows the final metrics and training logs — dataset loaded, split sizes, loss decreasing over 300 rounds, and final accuracy/precision/recall/F1 on the held-out test set.
+
+![Run summary](screenshots/lab1_run_summary.png)
+
+#### Loss Curves
+
+This shows how both training loss and validation loss decrease over time. The curves stay close together, meaning the model is learning well without overfitting.
+
+![Loss curves](screenshots/lab1_loss_curves.png)
+
+#### Feature Importance
+
+This shows which of the 16 features matter most for predicting letters. Features like `x-ege`, `xy2br`, and `y2bar` contribute the most.
+
+![Feature importance](screenshots/lab1_feature_importance.png)
+
+#### Confusion Matrix
+
+A 26×26 grid showing how well the model predicts each letter. Dark blue along the diagonal means correct predictions. Very few off-diagonal errors at 96% accuracy.
+
+![Confusion matrix](screenshots/lab1_confusion_matrix.png)
+
+---
+
+## Lab 2 — CNN on CIFAR-100
+
+### What I did
+
+I loaded the CIFAR-100 dataset with coarse labels (32×32 RGB images, 20 superclasses like
+"flowers", "fish", "vehicles", "insects"), trained a deep CNN, and logged everything to W&B.
+
+### Key features
+
+- CIFAR-100 with 20 superclasses (coarse labels)
+- 3 convolutional blocks with BatchNormalization and Dropout
+- GlobalAveragePooling instead of Flatten
+- Adam optimizer with ReduceLROnPlateau
+- Data augmentation (rotation, shifts, horizontal flip)
+- Early stopping (patience 5, restores best weights)
+- Stratified train / val / test split — val for callbacks, test only at the end
+- I log loss curves, sample predictions with images, confusion matrix, per-class accuracy
+- I print a full classification report
+- I save the trained model as a W&B artifact
+
+### Results
+
+| Metric     | Value   |
+| ---------- | ------- |
+| Accuracy   | 37.3%   |
+| Precision  | 41.5%   |
+| Recall     | 37.3%   |
+| F1         | 36.5%   |
+| Best Epoch | 13 / 15 |
+
+37% is expected for a baseline CNN on CIFAR-100 with only 15k training samples.
+Random guessing on 20 classes would give 5%, so my model performs 7× better than chance.
+Training is stable with no overfitting — the focus of this lab is experiment tracking, not achieving state-of-the-art accuracy.
+
+**Best classes:** flowers (0.58 F1), fruit_vegetables (0.50 F1), large_outdoor_natural (0.56 F1)
+
+**Hardest classes:** non-insect_invertebrates (0.07 F1), food_containers (0.19 F1)
+
+### Screenshots
+
+#### Training Output
+
+This shows the W&B run syncing, dataset split sizes, epoch-by-epoch training progress with accuracy and loss, and the ReduceLROnPlateau kicking in at epoch 5.
+
+![Training output](screenshots/lab2_training_output.png)
+
+#### Run Summary
+
+This shows the W&B run summary with final batch and epoch metrics — accuracy, loss, learning rate, and validation scores logged automatically.
+
+![Run summary](screenshots/lab2_run_summary.png)
+
+#### Classification Report
+
+This shows final test metrics (accuracy, precision, recall, F1) and a per-class breakdown showing which superclasses the model handles well and which it struggles with.
+
+![Classification report](screenshots/lab2_classification_report.png)
 
 ---
 
@@ -28,7 +142,7 @@ Lab_05/
 ├── Lab1.ipynb                  # xgboost on letter recognition
 ├── Lab2.ipynb                  # cnn on cifar-100
 ├── README.md
-├── SETUP.md                    # step-by-step run instructions
+├── SETUP.md                    # how to set up and run
 ├── screenshots/
 │   ├── lab1_run_summary.png
 │   ├── lab1_loss_curves.png
@@ -38,97 +152,8 @@ Lab_05/
 │   ├── lab2_run_summary.png
 │   └── lab2_classification_report.png
 ├── artifacts/                  # created at runtime
-│   ├── xgb_letter_model.json
-│   ├── cifar100_model.h5
-│   └── model_summary.txt
 └── wandb/                      # created at runtime
 ```
-
----
-
-## Lab 1 — Results
-
-| Metric | Value |
-| --- | --- |
-| Accuracy | 96.1% |
-| Precision | 96.2% |
-| Recall | 96.1% |
-| F1 | 96.1% |
-| Error Rate | 3.9% |
-| Best Iteration | 299 / 300 |
-
-### What's different from the original
-
-| What | Original | Modified |
-| --- | --- | --- |
-| Dataset | Dermatology (366 samples, 6 classes) | Letter Recognition (20,000 samples, 26 classes) |
-| Objective | `multi:softmax` | `multi:softprob` |
-| Hyperparameters | eta=0.1, max_depth=6, 5 rounds | eta=0.08, max_depth=8, up to 300 rounds |
-| Regularization | None | L1 + L2 + subsampling |
-| Split | Sequential 70/30 | Stratified 70/15/15 train/val/test |
-| Early stopping | None | 20 rounds patience on val set |
-| Metrics | Error rate only | Accuracy, Precision, Recall, F1, classification report |
-| Dashboard | Confusion matrix only | Confusion matrix + feature importance chart |
-| Artifact | None | Model saved to W&B |
-
-### Screenshots
-
-#### Run Summary
-![Run summary](screenshots/lab1_run_summary.png)
-
-#### Loss Curves
-![Loss curves](screenshots/lab1_loss_curves.png)
-
-#### Feature Importance
-![Feature importance](screenshots/lab1_feature_importance.png)
-
-#### Confusion Matrix
-![Confusion matrix](screenshots/lab1_confusion_matrix.png)
-
----
-
-## Lab 2 — Results
-
-| Metric | Value |
-| --- | --- |
-| Accuracy | 37.3% |
-| Precision | 41.5% |
-| Recall | 37.3% |
-| F1 | 36.5% |
-| Best Epoch | 13 / 15 |
-
-Training is stable with no overfitting (train ≈ val loss).
-37% is expected for a baseline CNN on CIFAR-100 with limited data (15k samples).
-Random guessing on 20 classes would be 5%, so the model is 7× better than chance.
-
-**Best classes:** flowers (0.58 F1), fruit_vegetables (0.50 F1), large_outdoor_natural (0.56 F1)
-
-**Hardest classes:** non-insect_invertebrates (0.07 F1), food_containers (0.19 F1)
-
-### What's different from the original
-
-| What | Original | Modified |
-| --- | --- | --- |
-| Dataset | Fashion MNIST (28×28 grayscale, 10 classes) | CIFAR-100 coarse (32×32 RGB, 20 classes) |
-| Architecture | 1 Conv2D → MaxPool → Flatten → Dense | 3 conv blocks (Conv2D + BatchNorm) → GlobalAvgPool → Dense(256) |
-| Optimizer | SGD (lr=0.01) | Adam (lr=0.001) + ReduceLROnPlateau |
-| Early stopping | None, fixed 5 epochs | Patience 5, restore best weights |
-| Augmentation | None | Rotation, shifts, horizontal flip |
-| Split | Test set reused as validation | Proper train/val/test split |
-| Metrics | Loss + accuracy only | Accuracy, Precision, Recall, F1, classification report |
-| Dashboard | Sample table + confusion matrix | + per-class accuracy + LR curve |
-| Artifact | Basic model save | Model + summary saved to W&B |
-
-### Screenshots
-
-#### Training Output
-![Training output](screenshots/lab2_training_output.png)
-
-#### Run Summary
-![Run summary](screenshots/lab2_run_summary.png)
-
-#### Classification Report
-![Classification report](screenshots/lab2_classification_report.png)
 
 ---
 
